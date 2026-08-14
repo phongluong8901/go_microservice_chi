@@ -1,0 +1,15 @@
+--- GNU Make
+GNU Make: Công cụ tự động hóa biên dịch (build automation tool), thường dùng file Makefile để viết các lệnh ngắn gọn chạy dự án (ví dụ: make run, make build).
+
+--- Chocolatly
+Chocolatey: Trình quản lý gói (package manager) dành cho hệ điều hành Windows (tương tự apt trên Ubuntu hay brew trên Mac), dùng để cài nhanh các phần mềm/công cụ dòng lệnh.
+
+--- Homebrew
+Homebrew: Trình quản lý gói phổ biến nhất dành cho macOS (và Linux), giúp cài đặt nhanh Go, Git, Docker, v.v. chỉ bằng một dòng lệnh.
+
+--- gRPC
+gRPC: Khung giao tiếp (RPC framework) hiệu năng cao do Google phát triển, cực kỳ phổ biến trong các hệ thống Microservices viết bằng Go để các dịch vụ gọi nhau qua mạng.
+
+--- rabbitMQ
+RabbitMQ: Phần mềm trung gian nhắn tin (Message Broker) dùng để xử lý hàng đợi (Queue), giúp các hệ thống giao tiếp bất đồng bộ với nhau.
+

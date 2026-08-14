@@ -1,0 +1,36 @@
+--- broker
+1. Broker (Người môi giới / Trung gian)
+Broker (hay Message Broker) là một phần mềm trung gian đứng giữa các hệ thống hoặc các phần của một ứng dụng. Nhiệm vụ chính của nó là nhận thông điệp (messages) từ một nơi và phân phối đến đúng nơi cần nhận.
+
+Chức năng chính:
+
+Tách rời hệ thống (Decoupling): Người gửi (Publisher) và người nhận (Subscriber) không cần biết đến sự tồn tại của nhau. Hệ thống gửi cứ gửi, hệ thống nhận lúc nào rảnh thì lấy ra xử lý.
+
+Đệm dữ liệu (Buffering): Nếu có một lượng lớn request ập đến cùng lúc, Broker sẽ giữ chúng trong hàng đợi (Queue) để hệ thống xử lý dần, tránh tình trạng quá tải (sập server).
+
+Định tuyến (Routing): Phân loại và chuyển hướng thông điệp đến đúng đối tượng dựa trên các quy tắc đã được thiết lập (ví dụ: log lỗi vào một hàng đợi riêng, thông báo email vào hàng đợi khác).
+
+Ví dụ thực tế:
+
+RabbitMQ (như bạn vừa đề cập ở trên), Kafka, Redis Pub/Sub.
+
+Trong ngữ cảnh bạn từng hỏi về WebSocket: Nếu bạn làm một app chat, Broker chính là nơi nhận tin nhắn từ người gửi A và quyết định xem cần đẩy tin nhắn đó đến những ai trong phòng chat.
+
+--- listener
+2. Listener (Người lắng nghe / Bộ tiếp nhận)
+Listener là một đoạn mã hoặc một tiến trình (process) chạy ngầm trong ứng dụng, với nhiệm vụ duy nhất là "lắng nghe" và chờ đợi một sự kiện (event), một kết nối, hoặc một thông điệp xảy ra để phản hồi lại.
+
+Chức năng chính:
+
+Lắng nghe kết nối mạng: Trong web server (như Go hay Node.js), Listener lắng nghe ở một cổng cụ thể (ví dụ: port 8080). Khi có một request HTTP hoặc WebSocket gửi tới, nó "bắt" lấy và chuyển cho các Handler xử lý.
+
+Lắng nghe Message Queue: Một Worker process đóng vai trò là Listener, liên tục kết nối với Broker (như RabbitMQ) để xem có tin nhắn mới nào rơi vào hàng đợi hay không. Nếu có, nó lấy tin nhắn đó ra và thực thi tác vụ (ví dụ: nén video, gửi email).
+
+Lắng nghe Event (Sự kiện): Trong UI/Frontend, Listener chờ đợi người dùng click chuột hoặc gõ phím.
+
+Ví dụ trong Go:
+
+Khi bạn dùng net.Listen("tcp", ":8080") để mở một server TCP.
+
+Hoặc khi bạn tạo một vòng lặp for để liên tục tiêu thụ (consume) tin nhắn từ một kênh (channel) hoặc từ RabbitMQ.
+

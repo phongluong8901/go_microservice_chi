@@ -1,0 +1,19 @@
+--- git
+
+--- install
+
+--- run
+cd front-end
+cd front-end
+go run ./cmd/web
+
+
+--- broker-service
+cd front-end
+mkdir broker-service
+cd broker-service
+gomod init broker
+
+--- link FE
+http://localhost/
+http://localhost:80
