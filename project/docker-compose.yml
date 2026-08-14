@@ -1,0 +1,13 @@
+version: '3' # (Lưu ý: Docker-compose bản mới sẽ báo warning dòng này nhưng vẫn chạy được)
+
+services:
+  broker-service:
+    build:
+      context: ./../broker-service       # Thư mục gốc chứa source code Go
+      dockerfile: ./../broker-service/broker-service.dockerfile # Đường dẫn tới file Dockerfile
+    restart: always
+    ports:
+      - "8080:80"                      # Ánh xạ cổng: Truy cập cổng 8080 trên máy tính sẽ vào cổng 80 trong container
+    deploy:
+      mode: replicated
+      replicas: 1

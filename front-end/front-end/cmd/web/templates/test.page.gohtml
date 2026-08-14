@@ -1,36 +1,92 @@
 {{template "base" .}}
 
-{{define "content" }}
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <h1 class="mt-5">Test microservices</h1>
-                <hr>
+{{define "content"}}
+<div class="container py-5" style="max-width: 900px;">
+    <!-- Header Section -->
+    <div class="d-flex align-items-center justify-content-between mb-4">
+        <div>
+            <h2 class="fw-bold mb-1" style="color: #1a1a1a; letter-spacing: -0.5px;">Microservice Playground</h2>
+            <p class="text-muted mb-0">Test and monitor your broker service communication in real-time.</p>
+        </div>
+        <button id="brokerBtn" class="btn px-4 py-2 fw-semibold text-white shadow-sm" style="background-color: #ff6d5a; border-color: #ff6d5a; border-radius: 8px;">
+            <i class="bi bi-play-fill me-1"></i> Test Broker
+        </button>
+    </div>
 
-                <div id="output" class="mt-5" style="outline: 1px solid silver; padding: 2em;">
-                    <span class="text-muted">Output shows here...</span>
+    <!-- Main Output Card -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background: #ffffff; border: 1px solid #eaeaea !important;">
+        <div class="card-body p-4">
+            <h6 class="text-uppercase text-muted fw-bold mb-3" style="letter-spacing: 0.5px; font-size: 0.75rem;">Live Execution Output</h6>
+            <div id="output" class="p-3 rounded-3 font-monospace fs-6" style="background: #f8f9fa; border: 1px solid #e5e7eb; color: #374151; min-height: 80px; max-height: 200px; overflow-y: auto;">
+                <span class="text-muted fst-italic">Waiting for execution... Click "Test Broker" to start.</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Payload & Response Grid -->
+    <div class="row g-4">
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: #ffffff; border: 1px solid #eaeaea !important;">
+                <div class="card-body p-4 d-flex flex-column">
+                    <h6 class="text-uppercase text-muted fw-bold mb-3" style="letter-spacing: 0.5px; font-size: 0.75rem;">Sent Payload</h6>
+                    <div class="p-3 rounded-3 flex-grow-1" style="background: #f8f9fa; border: 1px solid #e5e7eb; max-height: 250px; overflow-y: auto;">
+                        <pre id="payload" class="m-0 fs-7 font-monospace" style="color: #2563eb;"><span class="text-muted fst-italic">Nothing sent yet...</span></pre>
+                    </div>
                 </div>
             </div>
         </div>
-        <div class="row">
-            <div class="col">
-                <h4 class="mt-5">Sent</h4>
-                <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
-                    <pre id="payload"><span class="text-muted">Nothing sent yet...</span></pre>
-                </div>
-            </div>
-            <div class="col">
-                <h4 class="mt-5">Received</h4>
-                <div class="mt-1" style="outline: 1px solid silver; padding: 2em;">
-                    <pre id="received"><span class="text-muted">Nothing received yet...</span></pre>
+        <div class="col-md-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; background: #ffffff; border: 1px solid #eaeaea !important;">
+                <div class="card-body p-4 d-flex flex-column">
+                    <h6 class="text-uppercase text-muted fw-bold mb-3" style="letter-spacing: 0.5px; font-size: 0.75rem;">Received Response</h6>
+                    <div class="p-3 rounded-3 flex-grow-1" style="background: #f8f9fa; border: 1px solid #e5e7eb; max-height: 250px; overflow-y: auto;">
+                        <pre id="received" class="m-0 fs-7 font-monospace" style="color: #059669;"><span class="text-muted fst-italic">Nothing received yet...</span></pre>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
+</div>
 {{end}}
 
 {{define "js"}}
-    <script>
-        
-    </script>
+<script>
+    const brokerBtn = document.getElementById("brokerBtn");
+    const output = document.getElementById("output");
+    const payloadEl = document.getElementById("payload");
+    const received = document.getElementById("received");
+
+    brokerBtn.addEventListener("click", function() {
+        const requestOptions = {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+
+        payloadEl.innerHTML = JSON.stringify({ method: "POST", endpoint: "http://localhost:8080" }, null, 4);
+        output.innerHTML = `<span class="text-warning fw-semibold">Connecting to broker service...</span>`;
+
+        fetch("http://localhost:8080", requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                received.innerHTML = JSON.stringify(data, null, 4);
+                
+                if (data.error) {
+                    output.innerHTML = `<span class="text-danger fw-semibold">Error: ${data.message}</span>`;
+                } else {
+                    output.innerHTML = `<span class="text-success fw-semibold">Success: ${data.message}</span>`;
+                }
+            })
+            .catch((error) => {
+                output.innerHTML = `<span class="text-danger fw-semibold">Connection Failed: ${error.message}</span>`;
+                received.innerHTML = `<span class="text-danger">Error fetching data from server.</span>`;
+            });
+    });
+</script>
 {{end}}

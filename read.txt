@@ -17,3 +17,9 @@ gomod init broker
 --- link FE
 http://localhost/
 http://localhost:80
+
+--- docker compose
+cd project
+
+docker-compose up -d
+docker-compose up --build -d
