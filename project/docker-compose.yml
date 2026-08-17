@@ -1,13 +1,41 @@
-version: '3' # (Lưu ý: Docker-compose bản mới sẽ báo warning dòng này nhưng vẫn chạy được)
+version: '3'
 
 services:
   broker-service:
     build:
-      context: ./../broker-service       # Thư mục gốc chứa source code Go
-      dockerfile: ./../broker-service/broker-service.dockerfile # Đường dẫn tới file Dockerfile
+      context: ./../broker-service
+      dockerfile: ./../broker-service/broker-service.dockerfile
     restart: always
     ports:
-      - "8080:80"                      # Ánh xạ cổng: Truy cập cổng 8080 trên máy tính sẽ vào cổng 80 trong container
+      - "8080:80"
     deploy:
       mode: replicated
       replicas: 1
+
+  authentication-service:
+    build:
+      context: ./../authentication-service
+      dockerfile: ./../authentication-service/authentication-service.dockerfile
+    restart: always
+    ports:
+      - "8081:80"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      - DSN=host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5
+
+  postgres:
+    image: 'postgres:14.0'
+    ports:
+      - "5432:5432"
+    restart: always
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users     
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/

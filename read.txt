@@ -11,6 +11,7 @@ go run ./cmd/web
 --- broker-service
 cd front-end
 mkdir broker-service
+
 cd broker-service
 gomod init broker
 
@@ -23,3 +24,32 @@ cd project
 
 docker-compose up -d
 docker-compose up --build -d
+
+--- makefile run
+make up
+make start
+
+make up_build
+
+docker-compose down -v
+
+--- authentication-service
+cd authentication-service
+go mod init authentication
+
+go get golang.org/x/crypto/bcrypt
+
+go get github.com/go-chi/chi/v5
+go get github.com/go-chi/cors
+
+
+
+
+
+
+
+
+
+
+
+
