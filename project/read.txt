@@ -8,3 +8,33 @@ mongodb://admin:password@172.24.0.3:27017/?authSource=admin&directConnection=tru
 
 go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27
 go install google.golang.org/grpc/cmd/protoc-gen-grpc@v1.27
+
+
+--- start docker swarm
+docker swarm init
+docker swarm join-token worker
+
+docker stack deploy -c swarm.yml myapp
+docker service ls
+
+- start FE web
+make start
+
+--- scaling service
+docker service scale myapp_listener-service=3
+
+--- updating service
+docker service update --image phongluong/logger-service:1.0.1 myapp_logger-service
+
+--- stoping docker swarm
+docker service scale my_appbroker-service=0
+docker stack rm myapp
+docker service ls
+
+
+----
+docker-compose.yml (Local / Dev): Dùng lệnh docker compose up để chạy ứng dụng trên 1 máy đơn lẻ (máy cá nhân hoặc 1 Server VPS).
+
+swarm.yml (Production / Cluster): Dùng lệnh docker stack deploy -c swarm.yml <tên-stack> để chạy ứng dụng trên cụm nhiều máy chủ (Swarm Cluster) nối lại với nhau.
+
+

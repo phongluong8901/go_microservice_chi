@@ -49,6 +49,22 @@ go get github.com/go-chi/cors
 http://localhost:8025/
 
 
+--- linode
+Cách deploy ứng dụng Go trên Linode
+
+Cách 1: Chạy file nhị phân (Binary)
+Vì Go biên dịch ra file thực thi độc lập (static binary), bạn chỉ cần go build ở máy local, copy file đó lên máy chủ Linode rồi chạy trực tiếp mà không cần cài môi trường Go trên server.
+
+Cách 2: Chạy qua Docker / Docker Swarm (Tối ưu cho Microservices)
+Bạn có thể thuê 2 - 3 máy chủ Linode:
+
+Cài Docker lên các máy Linode này.
+
+Khởi tạo cụm Docker Swarm nối các máy Linode lại với nhau.
+
+Chạy lệnh docker stack deploy -c swarm.yml my-app để đẩy toàn bộ hệ thống (Go services, Caddy, Postgres, RabbitMQ...) lên chạy trên Linode.
+
+Linode cung cấp máy chủ (phần cứng ảo), còn Go, Docker, Caddy hay Database là phần mềm bạn đưa lên máy chủ đó để vận hành.
 
 
 
