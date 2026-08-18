@@ -45,7 +45,8 @@ go get golang.org/x/crypto/bcrypt
 go get github.com/go-chi/chi/v5
 go get github.com/go-chi/cors
 
-
+--- mail service
+http://localhost:8025/
 
 
 

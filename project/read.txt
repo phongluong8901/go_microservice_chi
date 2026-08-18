@@ -4,3 +4,7 @@ docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" pro
 
 -> them vao URI compass mongo
 mongodb://admin:password@172.24.0.3:27017/?authSource=admin&directConnection=true
+
+
+go install google.golang.org/protobuf/cmd/protoc-gen-go@v1.27
+go install google.golang.org/grpc/cmd/protoc-gen-grpc@v1.27
