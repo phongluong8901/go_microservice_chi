@@ -13,7 +13,7 @@ cd front-end
 mkdir broker-service
 
 cd broker-service
-gomod init broker
+go mod init broker
 
 --- link FE
 http://localhost/
@@ -26,9 +26,12 @@ docker-compose up -d
 docker-compose up --build -d
 
 --- makefile run
+make down
 make up
+-build FE
 make start
 
+-build microsevice
 make up_build
 
 docker-compose down -v

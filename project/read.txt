@@ -1,0 +1,6 @@
+check mongo docker port
+docker ps
+docker inspect -f "{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}" project-mongo-1
+
+-> them vao URI compass mongo
+mongodb://admin:password@172.24.0.3:27017/?authSource=admin&directConnection=true

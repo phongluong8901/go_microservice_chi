@@ -30,6 +30,12 @@ func main() {
 		log.Panic("can't connect to postgres")
 	}
 
+	// Tự động kiểm tra và tạo bảng users khi khởi động
+	err := setupTable(conn)
+	if err != nil {
+		log.Panic("Failed to create table:", err)
+	}
+
 	// set up config
 	app := Config{
 		DB:     conn,
@@ -42,14 +48,14 @@ func main() {
 	}
 
 	log.Printf("Starting server on port %s\n", webPort)
-	err := srv.ListenAndServe()
+	err = srv.ListenAndServe()
 	if err != nil {
 		log.Panic(err)
 	}
 }
 
 func openDB(dsn string) (*sql.DB, error) {
-	db, err := sql.Open("pgx", dsn) // Đã sửa từ :- thành :=
+	db, err := sql.Open("pgx", dsn)
 	if err != nil {
 		return nil, err
 	}
@@ -85,4 +91,25 @@ func connectToDb() *sql.DB {
 		time.Sleep(2 * time.Second)
 		continue
 	}
+}
+
+func setupTable(db *sql.DB) error {
+	stmt := `
+	CREATE TABLE IF NOT EXISTS users (
+		id SERIAL PRIMARY KEY,
+		email VARCHAR(255) UNIQUE NOT NULL,
+		first_name VARCHAR(255),
+		last_name VARCHAR(255),
+		password VARCHAR(255) NOT NULL,
+		user_active INT DEFAULT 1,
+		created_at TIMESTAMP NOT NULL,
+		updated_at TIMESTAMP NOT NULL
+	);
+	`
+	_, err := db.Exec(stmt)
+	if err != nil {
+		return err
+	}
+	log.Println("Checked/Created 'users' table successfully!")
+	return nil
 }

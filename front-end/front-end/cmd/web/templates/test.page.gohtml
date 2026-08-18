@@ -8,9 +8,20 @@
             <h2 class="fw-bold mb-1" style="color: #1a1a1a; letter-spacing: -0.5px;">Microservice Playground</h2>
             <p class="text-muted mb-0">Test and monitor your broker service communication in real-time.</p>
         </div>
-        <button id="brokerBtn" class="btn px-4 py-2 fw-semibold text-white shadow-sm" style="background-color: #ff6d5a; border-color: #ff6d5a; border-radius: 8px;">
-            <i class="bi bi-play-fill me-1"></i> Test Broker
-        </button>
+        <div class="d-flex gap-2 flex-wrap">
+            <button id="brokerBtn" class="btn px-4 py-2 fw-semibold text-white shadow-sm" style="background-color: #ff6d5a; border-color: #ff6d5a; border-radius: 8px;">
+                <i class="bi bi-play-fill me-1"></i> Test Broker
+            </button>
+            <button id="authBrokerBtn" class="btn px-4 py-2 fw-semibold text-white shadow-sm" style="background-color: #ff6d5a; border-color: #ff6d5a; border-radius: 8px;">
+                <i class="bi bi-play-fill me-1"></i> Test Auth
+            </button>
+            <button id="createUserBtn" class="btn px-4 py-2 fw-semibold text-white shadow-sm" style="background-color: #2563eb; border-color: #2563eb; border-radius: 8px;">
+                <i class="bi bi-person-plus-fill me-1"></i> Create User
+            </button>
+            <button id="logBtn" class="btn px-4 py-2 fw-semibold text-white shadow-sm" style="background-color: #ff6d5a; border-color: #ff6d5a; border-radius: 8px;">
+                <i class="bi bi-play-fill me-1"></i> Test Log
+            </button>
+        </div>
     </div>
 
     <!-- Main Output Card -->
@@ -18,7 +29,7 @@
         <div class="card-body p-4">
             <h6 class="text-uppercase text-muted fw-bold mb-3" style="letter-spacing: 0.5px; font-size: 0.75rem;">Live Execution Output</h6>
             <div id="output" class="p-3 rounded-3 font-monospace fs-6" style="background: #f8f9fa; border: 1px solid #e5e7eb; color: #374151; min-height: 80px; max-height: 200px; overflow-y: auto;">
-                <span class="text-muted fst-italic">Waiting for execution... Click "Test Broker" to start.</span>
+                <span class="text-muted fst-italic">Waiting for execution... Click a test button to start.</span>
             </div>
         </div>
     </div>
@@ -52,10 +63,14 @@
 {{define "js"}}
 <script>
     const brokerBtn = document.getElementById("brokerBtn");
+    const authBrokerBtn = document.getElementById("authBrokerBtn");
+    const createUserBtn = document.getElementById("createUserBtn");
+    const logBtn = document.getElementById("logBtn");
     const output = document.getElementById("output");
     const payloadEl = document.getElementById("payload");
     const received = document.getElementById("received");
 
+    // 1. Test Broker Service thông thường
     brokerBtn.addEventListener("click", function() {
         const requestOptions = {
             method: "POST",
@@ -68,6 +83,138 @@
         output.innerHTML = `<span class="text-warning fw-semibold">Connecting to broker service...</span>`;
 
         fetch("http://localhost:8080", requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                received.innerHTML = JSON.stringify(data, null, 4);
+                
+                if (data.error) {
+                    output.innerHTML = `<span class="text-danger fw-semibold">Error: ${data.message}</span>`;
+                } else {
+                    output.innerHTML = `<span class="text-success fw-semibold">Success: ${data.message}</span>`;
+                }
+            })
+            .catch((error) => {
+                output.innerHTML = `<span class="text-danger fw-semibold">Connection Failed: ${error.message}</span>`;
+                received.innerHTML = `<span class="text-danger">Error fetching data from server.</span>`;
+            });
+    });
+
+    // 2. Test Auth Service qua Broker (/handle)
+    authBrokerBtn.addEventListener("click", function() {
+        const payload = {
+            action: "auth",
+            auth: {
+                email: "admin@example.com",
+                password: "verysecret",
+            }
+        };
+
+        const requestOptions = {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+
+        payloadEl.innerHTML = JSON.stringify(payload, null, 4);
+        output.innerHTML = `<span class="text-warning fw-semibold">Connecting to broker service (/handle)...</span>`;
+
+        fetch("http://localhost:8080/handle", requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                received.innerHTML = JSON.stringify(data, null, 4);
+                
+                if (data.error) {
+                    output.innerHTML = `<span class="text-danger fw-semibold">Error: ${data.message}</span>`;
+                } else {
+                    output.innerHTML = `<span class="text-success fw-semibold">Success: ${data.message}</span>`;
+                }
+            })
+            .catch((error) => {
+                output.innerHTML = `<span class="text-danger fw-semibold">Connection Failed: ${error.message}</span>`;
+                received.innerHTML = `<span class="text-danger">Error fetching data from server.</span>`;
+            });
+    });
+
+    // 3. Test Create User Service qua Broker (/handle)
+    createUserBtn.addEventListener("click", function() {
+        const payload = {
+            action: "create_user",
+            user: {
+                email: "admin@example.com",
+                first_name: "Admin",
+                last_name: "User",
+                password: "verysecret",
+                user_active: 1
+            }
+        };
+
+        const requestOptions = {
+            method: 'POST',
+            body: JSON.stringify(payload),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+
+        payloadEl.innerHTML = JSON.stringify(payload, null, 4);
+        output.innerHTML = `<span class="text-warning fw-semibold">Creating user in database...</span>`;
+
+        fetch("http://localhost:8080/handle", requestOptions)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then((data) => {
+                received.innerHTML = JSON.stringify(data, null, 4);
+                
+                if (data.error) {
+                    output.innerHTML = `<span class="text-danger fw-semibold">Error: ${data.message}</span>`;
+                } else {
+                    output.innerHTML = `<span class="text-success fw-semibold">Success: User created successfully! Now you can click Test Auth.</span>`;
+                }
+            })
+            .catch((error) => {
+                output.innerHTML = `<span class="text-danger fw-semibold">Connection Failed: ${error.message}</span>`;
+                received.innerHTML = `<span class="text-danger">Error fetching data from server.</span>`;
+            });
+    });
+
+    // 4. Test Log Service qua Broker (/handle)
+    logBtn.addEventListener("click", function() {
+        const payload = {
+            action: "log",
+            log: {
+                name: "event",
+                data: "Some kinds of data",
+            }
+        };
+
+        const requestOptions = {
+            method: "POST",
+            body: JSON.stringify(payload),
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+
+        payloadEl.innerHTML = JSON.stringify(payload, null, 4);
+        output.innerHTML = `<span class="text-warning fw-semibold">Connecting to broker service (/handle) for logging...</span>`;
+
+        fetch("http://localhost:8080/handle", requestOptions)
             .then((response) => {
                 if (!response.ok) {
                     throw new Error(`HTTP error! status: ${response.status}`);
